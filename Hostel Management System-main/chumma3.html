@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Profile</title>
+
+  <!-- Font Awesome -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet"/>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(-45deg, #2b5876, #4e4376, #1e3c72, #4a90e2);
+      background-size: 300% 300%;
+      animation: gradientShift 8s ease infinite;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      color: white;
+      position: relative;
+    }
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 30px 40px;
+      border-radius: 15px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(12px);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      animation: fadeInScale 0.8s forwards ease-out;
+      width: 90%;
+      max-width: 600px;
+    }
+
+    @keyframes fadeInScale {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+      text-align: left;
+    }
+
+    th {
+      text-transform: uppercase;
+      font-size: 14px;
+      color: #e0e0e0;
+    }
+
+    td {
+      font-size: 16px;
+    }
+
+    
+
+    .profile-icon {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 24px;
+      color: white;
+      background-color: rgba(255, 255, 255, 0.2);
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .profile-icon:hover {
+      background-color: rgba(255, 255, 255, 0.4);
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body>
+
+  <a href="index.html" class="profile-icon" title="Home">
+    <i class="fas fa-home"></i>
+  </a>
+  
+
+  <div class="container">
+    <h1>Student Profile</h1>
+    <table>
+      <tr>
+        <th>Field</th>
+        <th>Details</th>
+      </tr>
+      <tr>
+        <td><strong>Name:</strong></td>
+        <td id="studentName">Loading...</td>
+      </tr>
+      <tr>
+        <td><strong>Roll Number:</strong></td>
+        <td id="rollNumber">Loading...</td>
+      </tr>
+      <tr>
+        <td><strong>Phone:</strong></td>
+        <td id="phone">Loading...</td>
+      </tr>
+      <tr>
+        <td><strong>Email:</strong></td>
+        <td id="email">Loading...</td>
+      </tr>
+      <tr>
+        <td><strong>Room:</strong></td>
+        <td id="room">Loading...</td>
+      </tr>
+      <tr>
+        <td><strong>Branch:</strong></td>
+        <td id="branch">Loading...</td>
+      </tr>
+    </table>
+  </div>
+
+  <script>
+    function logout() {
+      sessionStorage.clear();
+      window.location.href = "index.html";
+    }
+
+    // Redirect if not logged in
+    if (sessionStorage.getItem("isLoggedIn") !== "true") {
+      window.location.href = "login.html";
+    }
+
+    const rollno = sessionStorage.getItem("id");
+
+    if (!rollno) {
+      alert("Roll number not found. Please login again.");
+      window.location.href = "login.html";
+    }
+
+    fetch(`http://localhost:5001/student/${rollno}`)
+      .then(res => {
+        if (!res.ok) {
+          throw new Error("Student not found");
+        }
+        return res.json();
+      })
+      .then(data => {
+        document.getElementById("studentName").textContent = data.name || "-";
+        document.getElementById("rollNumber").textContent = data.rollno || "-";
+        document.getElementById("phone").textContent = data.phoneno || "-";
+        document.getElementById("email").textContent = data.emailid || "-";
+        document.getElementById("room").textContent = data.roomno || "-";
+        document.getElementById("branch").textContent = data.branch || "-";
+      })
+      .catch(error => {
+        console.error("Error fetching student data:", error);
+        alert("Unable to fetch student data.");
+      });
+  </script>
+</body>
+</html>
+

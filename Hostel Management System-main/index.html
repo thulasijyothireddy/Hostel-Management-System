@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Login - Hostel Database</title>
+    
+    <!-- ✅ Redirect if already logged in -->
+    <script>
+        if (sessionStorage.getItem("id")) {
+            window.location.href = "chumma2.html";
+        }
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #2b5876, #4e4376);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: relative;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        .title {
+            font-size: 36px;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+            margin-bottom: 40px;
+            z-index: 2;
+            position: absolute;
+            top: 12%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            padding: 0 20px;
+            box-sizing: border-box;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        @media (max-width: 768px) {
+            .title { font-size: 28px; top: 8%; }
+        }
+        @media (max-width: 480px) {
+            .title { font-size: 22px; top: 5%; }
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            z-index: 2;
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 {
+            font-size: 26px;
+            color: #1e3c72;
+            margin-bottom: 20px;
+        }
+        input, button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #1e3c72;
+            border-radius: 10px;
+            font-size: 16px;
+            text-align: center;
+        }
+        button {
+            background: #1e3c72;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #12264f;
+            transform: scale(1.05);
+        }
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-top: -5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="title">STUDENT CENTRALIZED HOSTEL MANAGEMENT SYSTEM</div>
+    <div class="container">
+        <h1>Login</h1>
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Enter Username" required />
+            <input type="password" id="password" placeholder="Enter Password" required />
+            <p class="error-message" id="errorMsg">Invalid credentials. Try again.</p>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+
+    <script>
+        // ✅ Login Logic
+        document.getElementById("loginForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const username = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value.trim();
+            const errorMsg = document.getElementById("errorMsg");
+
+            const apiUrl = "http://localhost:5001/auth/login";
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.id) {
+                    sessionStorage.setItem("id", data.id); // changed rollNo to id
+                    sessionStorage.setItem("username", username);
+                    sessionStorage.setItem("isLoggedIn", "true");
+                    window.location.href = "chumma2.html";
+                } else {
+                    errorMsg.style.display = "block"; // Show error message
+                }
+
+            } catch (error) {
+                console.error("Login error:", error);
+                errorMsg.style.display = "block";
+            }
+        });
+
+        // ✅ Background Particles
+        particlesJS("particles-js", {
+            "particles": {
+                "number": { "value": 80 },
+                "size": { "value": 3 }
+            }
+        });
+
+        // ✅ Disable Back Navigation
+        history.pushState(null, null, location.href);
+        window.onpopstate = function () {
+            history.go(1);
+        };
+    </script>
+</body>
+</html>
+
